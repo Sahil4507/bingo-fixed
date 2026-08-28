@@ -1,3 +1,5 @@
+> Please Contribute in Potential Bug Fixes
+
 # BINGO - Android Multiplayer Game
 
 A custom 2-player real-time multiplayer Bingo game built with modern Android practices. This is not traditional Bingo; it uses a 5x5 grid with numbers 1-25 and custom line completion rules.
