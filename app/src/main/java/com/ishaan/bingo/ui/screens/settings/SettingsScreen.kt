@@ -1,6 +1,8 @@
 package com.ishaan.bingo.ui.screens.settings
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -32,6 +34,7 @@ fun SettingsScreen(
     presetViewModel: PresetViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val themeMode by viewModel.themeMode.collectAsState()
+    val fontScale by viewModel.fontScale.collectAsState()
     val confirmCalls by viewModel.confirmCalls.collectAsState()
     val hapticsEnabled by viewModel.hapticsEnabled.collectAsState()
     val presets by presetViewModel.presets.collectAsState()
@@ -62,6 +65,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             // APPEARANCE
@@ -110,7 +114,44 @@ fun SettingsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Font Size Slider
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Font Size",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = if (kotlin.math.abs(fontScale - 0.8f) < 0.01f) "Default (0.8x)" else String.format(java.util.Locale.US, "%.1fx", fontScale),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Slider(
+                    value = fontScale,
+                    onValueChange = { viewModel.setFontScale(it) },
+                    valueRange = 0.4f..1.0f,
+                    steps = 5,
+                    modifier = Modifier.weight(1.2f),
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                        activeTickColor = MaterialTheme.colorScheme.onPrimary,
+                        inactiveTickColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             // PRESET BOARDS
             Text(
@@ -157,7 +198,7 @@ fun SettingsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // GAMEPLAY
             Text(
@@ -220,7 +261,7 @@ fun SettingsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // FOOTER
             Text(

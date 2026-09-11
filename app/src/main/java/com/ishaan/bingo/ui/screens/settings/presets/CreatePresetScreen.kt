@@ -83,7 +83,7 @@ fun CreatePresetScreen(
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(5),
@@ -129,7 +129,7 @@ fun CreatePresetScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -138,14 +138,16 @@ fun CreatePresetScreen(
                 OutlinedButton(
                     onClick = { viewModel.undo() },
                     enabled = uiState.history.isNotEmpty(),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(vertical = 12.dp)
                 ) {
                     Text("UNDO")
                 }
                 Button(
                     onClick = { viewModel.delete() },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(vertical = 12.dp)
                 ) {
                     Text("DELETE")
                 }
@@ -171,7 +173,8 @@ fun CreatePresetScreen(
                         onComplete = onSaved
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
+                contentPadding = PaddingValues(vertical = 12.dp),
                 enabled = uiState.isReady
             ) {
                 Text(

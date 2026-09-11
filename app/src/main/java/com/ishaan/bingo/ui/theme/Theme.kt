@@ -81,6 +81,7 @@ private val LightBingoColors = BingoColors(
 @Composable
 fun BingoTheme(
     themeMode: ThemeMode = ThemeMode.SYSTEM,
+    fontScale: Float = 0.8f,
     content: @Composable () -> Unit
 ) {
     val darkTheme = when (themeMode) {
@@ -91,8 +92,15 @@ fun BingoTheme(
 
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val bingoColors = if (darkTheme) DarkBingoColors else LightBingoColors
+    val currentDensity = androidx.compose.ui.platform.LocalDensity.current
 
-    CompositionLocalProvider(LocalBingoColors provides bingoColors) {
+    CompositionLocalProvider(
+        LocalBingoColors provides bingoColors,
+        androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(
+            density = currentDensity.density,
+            fontScale = fontScale
+        )
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,

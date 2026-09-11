@@ -24,7 +24,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
             val themeMode by settingsViewModel.themeMode.collectAsState()
-            BingoTheme(themeMode = themeMode) {
+            val fontScale by settingsViewModel.fontScale.collectAsState()
+            BingoTheme(themeMode = themeMode, fontScale = fontScale) {
                 // Plain Surface — each screen handles its own insets
                 Surface(modifier = Modifier.fillMaxSize()) {
                     BingoNavHost()

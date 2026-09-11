@@ -198,7 +198,7 @@ fun BoardSetupScreen(
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Tap cells to place numbers 1–25 sequentially.", style = MaterialTheme.typography.bodyMedium)
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(5),
@@ -245,7 +245,7 @@ fun BoardSetupScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -311,7 +311,7 @@ fun BoardSetupScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
@@ -331,7 +331,7 @@ fun BoardSetupScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -360,7 +360,7 @@ fun BoardSetupScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = "Undo last move or clear the entire board",
@@ -372,7 +372,8 @@ fun BoardSetupScreen(
 
         Button(
             onClick = { viewModel.submitBoard(roomId) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
+            contentPadding = PaddingValues(vertical = 12.dp),
             enabled = uiState.isReady && !uiState.isSubmitting && !uiState.isWaitingForOpponent,
             shape = MaterialTheme.shapes.medium
         ) {
