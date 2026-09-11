@@ -52,17 +52,17 @@ fun BingoNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack(Screen.Lobby.route, inclusive = false) },
                 onPresetsClick = { navController.navigate(Screen.PresetList.route) },
                 onHowToPlayClick = { navController.navigate(Screen.HowToPlay.route) }
             )
         }
         composable(Screen.HowToPlay.route) {
-            HowToPlayScreen(onBackClick = { navController.popBackStack() })
+            HowToPlayScreen(onBackClick = { navController.popBackStack(Screen.Settings.route, inclusive = false) })
         }
         composable(Screen.PresetList.route) {
             PresetListScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack(Screen.Settings.route, inclusive = false) },
                 onAddClick = { navController.navigate(Screen.CreatePreset.createRoute()) },
                 onEditClick = { presetId -> navController.navigate(Screen.CreatePreset.createRoute(presetId)) }
             )
@@ -71,8 +71,8 @@ fun BingoNavHost(navController: NavHostController = rememberNavController()) {
             val presetId = backStackEntry.arguments?.getString("presetId")
             CreatePresetScreen(
                 presetId = presetId,
-                onBackClick = { navController.popBackStack() },
-                onSaved = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack(Screen.PresetList.route, inclusive = false) },
+                onSaved = { navController.popBackStack(Screen.PresetList.route, inclusive = false) }
             )
         }
         composable(Screen.BoardSetup.route) { backStackEntry ->

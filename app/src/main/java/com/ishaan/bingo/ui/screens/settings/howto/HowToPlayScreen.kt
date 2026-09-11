@@ -9,8 +9,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -188,15 +187,26 @@ fun HowToPlayScreen(
                 }
 
                 // Next/Finish Button
+                var isFinishing by remember { mutableStateOf(false) }
+
                 if (pagerState.currentPage == steps.size - 1) {
-                    Button(onClick = onBackClick) {
+                    Button(
+                        onClick = {
+                            if (!isFinishing) {
+                                isFinishing = true
+                                onBackClick()
+                            }
+                        },
+                        enabled = !isFinishing
+                    ) {
                         Text("FINISH")
                     }
                 } else {
                     IconButton(
                         onClick = {
                             scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                val next = (pagerState.currentPage + 1).coerceAtMost(steps.size - 1)
+                                pagerState.animateScrollToPage(next)
                             }
                         },
                         colors = IconButtonDefaults.filledIconButtonColors(
