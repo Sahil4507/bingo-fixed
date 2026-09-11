@@ -57,6 +57,7 @@ class ResultViewModel(
     }
 
     fun playAgain() {
+        if (_uiState.value.isPlayingAgain) return
         viewModelScope.launch {
             _uiState.update { it.copy(isPlayingAgain = true, error = null) }
             repository.playAgain(roomId).onFailure {
