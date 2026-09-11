@@ -74,7 +74,7 @@ fun ResultScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = if (isWinner) "BINGO!" else "GAME OVER",
@@ -106,7 +106,7 @@ fun ResultScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Reveal Header
         Row(
@@ -142,7 +142,7 @@ fun ResultScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // 5x5 Board Display
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
@@ -173,7 +173,7 @@ fun ResultScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

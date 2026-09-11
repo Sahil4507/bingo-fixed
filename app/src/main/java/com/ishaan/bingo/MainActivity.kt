@@ -19,7 +19,7 @@ import com.ishaan.bingo.ui.theme.BingoTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppViewModelProvider.init(BingoDatabase.getInstance(this))
+        AppViewModelProvider.init(this, BingoDatabase.getInstance(this))
         enableEdgeToEdge()
         setContent {
             val settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)

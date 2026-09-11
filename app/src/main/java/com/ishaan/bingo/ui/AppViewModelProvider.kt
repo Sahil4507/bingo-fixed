@@ -12,13 +12,16 @@ import com.ishaan.bingo.ui.screens.game.GameViewModel
 import com.ishaan.bingo.ui.screens.lobby.LobbyViewModel
 import com.ishaan.bingo.ui.screens.result.ResultViewModel
 import com.ishaan.bingo.ui.screens.settings.SettingsViewModel
+import android.content.Context
+import com.ishaan.bingo.data.repository.SettingsPreferences
 import com.ishaan.bingo.ui.screens.settings.presets.PresetViewModel
 import com.ishaan.bingo.ui.screens.setup.BoardSetupViewModel
 
 object AppViewModelProvider {
     val repository = GameRepositoryImpl(FirebaseGameDataSource())
-    val settingsViewModel = SettingsViewModel()
+    lateinit var settingsViewModel: SettingsViewModel
     lateinit var presetRepository: LocalPresetRepository
+    lateinit var settingsPreferences: SettingsPreferences
 
     var currentBotRepository: LocalGameRepository? = null
 
@@ -28,7 +31,9 @@ object AppViewModelProvider {
         return repo
     }
 
-    fun init(db: BingoDatabase) {
+    fun init(context: Context, db: BingoDatabase) {
+        settingsPreferences = SettingsPreferences(context.applicationContext)
+        settingsViewModel = SettingsViewModel(settingsPreferences)
         presetRepository = LocalPresetRepository(db)
     }
 
