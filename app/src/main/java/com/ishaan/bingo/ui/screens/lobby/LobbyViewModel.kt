@@ -108,27 +108,27 @@ class LobbyViewModel(
         }
     }
 
-    fun playWithBot(difficulty: BotDifficulty) {
+    fun playWithBot(difficulty: BotDifficulty): String {
         roomObserverJob?.cancel()
         roomObserverJob = null
 
         val localRepo = AppViewModelProvider.freshBotRepository(difficulty)
+        val draft = localRepo.createRoomDraft()
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            localRepo.createRoom(localRepo.createRoomDraft()).onSuccess { room ->
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        joinedRoomId = room.id,
-                        shouldNavigateToSetup = true,
-                        isBotGame = true
-                    )
-                }
-            }.onFailure { error ->
-                _uiState.update { it.copy(isLoading = false, error = mapError(error)) }
-            }
+        kotlinx.coroutines.runBlocking {
+            localRepo.createRoom(draft)
         }
+
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                joinedRoomId = draft.id,
+                shouldNavigateToSetup = false,
+                isBotGame = true
+            )
+        }
+
+        return draft.id
     }
 
     private fun observeRoomForCreator(roomId: String) {

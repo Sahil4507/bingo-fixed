@@ -29,8 +29,8 @@ fun LobbyScreen(
             val roomId = uiState.joinedRoomId
             val isBot = uiState.isBotGame
             if (roomId != null) {
-                viewModel.consumeNavigation()
                 onGameJoined(roomId, isBot)
+                viewModel.consumeNavigation()
             }
         }
     }
@@ -44,8 +44,9 @@ fun LobbyScreen(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Button(
                         onClick = {
-                            viewModel.playWithBot(BotDifficulty.EASY)
                             showDifficultyPopup = false
+                            val roomId = viewModel.playWithBot(BotDifficulty.EASY)
+                            onGameJoined(roomId, true)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -54,8 +55,9 @@ fun LobbyScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
-                            viewModel.playWithBot(BotDifficulty.HARD)
                             showDifficultyPopup = false
+                            val roomId = viewModel.playWithBot(BotDifficulty.HARD)
+                            onGameJoined(roomId, true)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -64,8 +66,9 @@ fun LobbyScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
-                            viewModel.playWithBot(BotDifficulty.TEE_HEE)
                             showDifficultyPopup = false
+                            val roomId = viewModel.playWithBot(BotDifficulty.TEE_HEE)
+                            onGameJoined(roomId, true)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(

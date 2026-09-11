@@ -23,7 +23,8 @@ class LocalGameRepository(
     private val difficulty: BotDifficulty = BotDifficulty.EASY,
     private val gameEngine: BingoGameEngine = BingoGameEngine(),
     private val botMoveStrategy: BotMoveStrategy = BotMoveStrategy(),
-    override val playerId: String = "local-player-1"
+    override val playerId: String = "local-player-1",
+    val roomId: String = "bot-${UUID.randomUUID().toString().take(8)}"
 ) : GameRepository {
 
     private val player2Id = "local-player-2"
@@ -41,8 +42,8 @@ class LocalGameRepository(
     override suspend fun prepareSession(): Result<Unit> = Result.success(Unit)
 
     override fun createRoomDraft(): GameRoom = GameRoom(
-        id = "mock-room",
-        code = "DEBUG",
+        id = roomId,
+        code = "BOT",
         status = GameStatus.BOARD_SETUP,
         isBotGame = true,
         botDifficulty = difficulty
@@ -51,8 +52,8 @@ class LocalGameRepository(
     override suspend fun createRoom(room: GameRoom): Result<GameRoom> {
         val p2 = Player(id = player2Id, name = "Opponent (Bot)")
         val roomWithCreator = room.copy(
-            id = "mock-room",
-            code = "DEBUG",
+            id = roomId,
+            code = "BOT",
             players = mapOf(
                 playerId to Player(id = playerId, name = "You"),
                 player2Id to p2
