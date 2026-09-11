@@ -24,11 +24,13 @@ fun LobbyScreen(
     var joinCode by remember { mutableStateOf("") }
     var showDifficultyPopup by remember { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.shouldNavigateToSetup, uiState.joinedRoomId) {
+    LaunchedEffect(uiState.shouldNavigateToSetup) {
         if (uiState.shouldNavigateToSetup) {
-            uiState.joinedRoomId?.let {
-                viewModel.consumeNavigation() // clear flag before navigating so back doesn't re-trigger
-                onGameJoined(it, uiState.isBotGame)
+            val roomId = uiState.joinedRoomId
+            val isBot = uiState.isBotGame
+            if (roomId != null) {
+                viewModel.consumeNavigation()
+                onGameJoined(roomId, isBot)
             }
         }
     }

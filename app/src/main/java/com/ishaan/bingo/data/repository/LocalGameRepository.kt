@@ -43,27 +43,35 @@ class LocalGameRepository(
     override fun createRoomDraft(): GameRoom = GameRoom(
         id = "mock-room",
         code = "DEBUG",
-        status = GameStatus.WAITING_FOR_PLAYER,
+        status = GameStatus.BOARD_SETUP,
         isBotGame = true,
         botDifficulty = difficulty
     )
 
     override suspend fun createRoom(room: GameRoom): Result<GameRoom> {
+        val p2 = Player(id = player2Id, name = "Opponent (Bot)")
         val roomWithCreator = room.copy(
             id = "mock-room",
             code = "DEBUG",
-            players = mapOf(playerId to Player(id = playerId, name = "You")),
+            players = mapOf(
+                playerId to Player(id = playerId, name = "You"),
+                player2Id to p2
+            ),
+            status = GameStatus.BOARD_SETUP,
             isBotGame = true,
             botDifficulty = difficulty
         )
         _room.value = roomWithCreator
 
-        // Auto-join a second player after a short delay to simulate "waiting"
-        kotlinx.coroutines.delay(1000)
-        joinRoom("DEBUG")
+        // Auto-submit board for P2. In TEE-HEE mode, start with an empty board.
+        val p2Board = if (difficulty == BotDifficulty.TEE_HEE) {
+            BingoBoard(List(25) { null })
+        } else {
+            BingoBoard((1..25).toList().shuffled())
+        }
+        _boards.value = mapOf(player2Id to p2Board)
 
-        // Fix: return the current (updated) room state, not the stale initial snapshot
-        return Result.success(_room.value ?: roomWithCreator)
+        return Result.success(roomWithCreator)
     }
 
     override suspend fun joinRoom(code: String): Result<GameRoom> {
