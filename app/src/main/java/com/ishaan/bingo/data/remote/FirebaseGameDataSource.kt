@@ -144,7 +144,14 @@ class FirebaseGameDataSource(
                 callerMap = newCallerMap,
                 currentTurnPlayerId = nextTurnPlayerId
             )
-            transaction.set(docRef, updatedRoom)
+            transaction.update(
+                docRef,
+                mapOf(
+                    "calledNumbers" to newCalledNumbers,
+                    "callerMap" to newCallerMap,
+                    "currentTurnPlayerId" to nextTurnPlayerId
+                )
+            )
             resultRoom = updatedRoom
         }.await()
 

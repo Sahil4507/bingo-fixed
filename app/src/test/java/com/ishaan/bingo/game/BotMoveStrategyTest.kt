@@ -11,16 +11,16 @@ class BotMoveStrategyTest {
 
     @Test
     fun `opens with the centre number when it is available`() {
-        assertEquals(13, strategy.chooseNumber(orderedBoard, emptySet()))
+        assertEquals(13, strategy.chooseNumber(orderedBoard, orderedBoard, emptySet(), com.ishaan.bingo.domain.model.BotDifficulty.EASY))
     }
 
     @Test
     fun `continues a row containing two called numbers`() {
-        assertTrue(strategy.chooseNumber(orderedBoard, setOf(1, 2)) in 3..5)
+        assertTrue(strategy.chooseNumber(orderedBoard, orderedBoard, setOf(1, 2), com.ishaan.bingo.domain.model.BotDifficulty.EASY) in 3..5)
     }
 
     @Test
     fun `finishes a nearly complete line before extending another`() {
-        assertEquals(5, strategy.chooseNumber(orderedBoard, setOf(1, 2, 3, 4, 7, 8)))
+        assertEquals(5, strategy.chooseNumber(orderedBoard, orderedBoard, setOf(1, 2, 3, 4, 7, 8), com.ishaan.bingo.domain.model.BotDifficulty.EASY))
     }
 }

@@ -27,6 +27,8 @@ class GameViewModel(
     private val _uiState = MutableStateFlow(GameUiState(isLoading = true))
     val uiState = _uiState.asStateFlow()
 
+    private val pendingCalledNumbers = MutableStateFlow<Set<Int>>(emptySet())
+
     init {
         observeGame()
         setupLocalProgressionSync()
@@ -34,8 +36,29 @@ class GameViewModel(
 
     private fun observeGame() {
         viewModelScope.launch {
-            repository.getGameRoom(roomId).collect { room ->
-                _uiState.update { it.copy(gameRoom = room, isLoading = false) }
+            repository.getGameRoom(roomId).collect { serverRoom ->
+                if (serverRoom == null) {
+                    _uiState.update { it.copy(gameRoom = null, isLoading = false) }
+                    return@collect
+                }
+
+                // Remove numbers from pendingCalls that the server has already acknowledged
+                val serverCalledSet = serverRoom.calledNumbers.toSet()
+                pendingCalledNumbers.update { pending ->
+                    pending.filter { it !in serverCalledSet }.toSet()
+                }
+                val currentPending = pendingCalledNumbers.value
+
+                // Merge server called numbers with any in-flight pending calls so state never regresses
+                val mergedCalledNumbers = (serverRoom.calledNumbers + currentPending).distinct()
+                val mergedCallerMap = serverRoom.callerMap + currentPending.associate { it.toString() to repository.playerId }
+
+                val mergedRoom = serverRoom.copy(
+                    calledNumbers = mergedCalledNumbers,
+                    callerMap = mergedCallerMap
+                )
+
+                _uiState.update { it.copy(gameRoom = mergedRoom, isLoading = false) }
             }
         }
 
@@ -49,14 +72,15 @@ class GameViewModel(
     /**
      * Decentralized Sync Logic:
      * We watch for changes in calledNumbers, calculate our own progress locally,
-     * and push it to the server if it has changed.
+     * and push it to the server once calls are settled.
      */
     private fun setupLocalProgressionSync() {
         viewModelScope.launch {
             combine(
                 uiState.map { it.gameRoom?.calledNumbers }.distinctUntilChanged(),
-                uiState.map { it.playerBoard }.distinctUntilChanged()
-            ) { calledNumbers, board ->
+                uiState.map { it.playerBoard }.distinctUntilChanged(),
+                uiState.map { it.isCallingNumber }.distinctUntilChanged()
+            ) { calledNumbers, board, isCallingNumber ->
                 if (calledNumbers == null || board == null) return@combine
 
                 // Calculate actual progress based on current board and called numbers
@@ -66,24 +90,24 @@ class GameViewModel(
                 // Update local state immediately for zero-latency UI feedback
                 _uiState.update { it.copy(localBingoProgress = newProgress) }
 
+                // Wait until number call transaction settles on server before syncing progress
+                if (isCallingNumber) return@combine
+
                 val myPlayer = uiState.value.gameRoom?.players?.get(repository.playerId) ?: return@combine
                 val currentCompletedLines = myPlayer.completedLines.toSet()
                 
                 // Only sync if we have actually found new lines not yet on the server
                 val newlyCompletedLines = detectedLines - currentCompletedLines
                 
-                if (newlyCompletedLines.isNotEmpty()) {
-                    // Double check we aren't re-syncing the same progress
-                    if (newProgress > myPlayer.bingoProgress) {
-                        val claimWin = newProgress >= 5
-                        
-                        repository.syncMyProgress(
-                            roomId = roomId,
-                            progress = newProgress,
-                            completedLines = detectedLines.toList(),
-                            claimWin = claimWin
-                        )
-                    }
+                if (newlyCompletedLines.isNotEmpty() || newProgress > myPlayer.bingoProgress) {
+                    val claimWin = newProgress >= 5
+                    
+                    repository.syncMyProgress(
+                        roomId = roomId,
+                        progress = newProgress,
+                        completedLines = detectedLines.toList(),
+                        claimWin = claimWin
+                    )
                 }
             }.collect()
         }
@@ -94,10 +118,12 @@ class GameViewModel(
         val currentRoom = _uiState.value.gameRoom ?: return
         if (currentRoom.currentTurnPlayerId != repository.playerId) return
 
+        pendingCalledNumbers.update { it + number }
+
         // Atomic Optimistic Update — reflects call instantly and sets loading guard
         _uiState.update { 
             val optimisticRoom = currentRoom.copy(
-                calledNumbers = currentRoom.calledNumbers + number,
+                calledNumbers = (currentRoom.calledNumbers + number).distinct(),
                 callerMap = currentRoom.callerMap + (number.toString() to repository.playerId),
                 // Restore optimistic turn flip for snappier UI
                 currentTurnPlayerId = currentRoom.players.keys
@@ -112,6 +138,7 @@ class GameViewModel(
                     _uiState.update { it.copy(isCallingNumber = false) }
                 }
                 .onFailure { error ->
+                    pendingCalledNumbers.update { it - number }
                     _uiState.update {
                         it.copy(
                             gameRoom = currentRoom,
