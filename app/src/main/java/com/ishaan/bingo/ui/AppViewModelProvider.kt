@@ -48,21 +48,54 @@ object AppViewModelProvider {
 
     fun boardSetupViewModelFactory(roomId: String, isBot: Boolean = false) = viewModelFactory {
         initializer {
-            val repo = if (isBot) currentBotRepository ?: LocalGameRepository() else repository
+            val repo = if (isBot) {
+                val current = currentBotRepository
+                if (current != null && (current.roomId == roomId || roomId.isEmpty())) {
+                    current
+                } else {
+                    val newRepo = LocalGameRepository(roomId = if (roomId.isNotEmpty()) roomId else "bot-${java.util.UUID.randomUUID().toString().take(8)}")
+                    currentBotRepository = newRepo
+                    newRepo
+                }
+            } else {
+                repository
+            }
             BoardSetupViewModel(repo)
         }
     }
 
     fun gameViewModelFactory(roomId: String, isBot: Boolean = false) = viewModelFactory {
         initializer {
-            val repo = if (isBot) currentBotRepository ?: LocalGameRepository() else repository
+            val repo = if (isBot) {
+                val current = currentBotRepository
+                if (current != null && (current.roomId == roomId || roomId.isEmpty())) {
+                    current
+                } else {
+                    val newRepo = LocalGameRepository(roomId = if (roomId.isNotEmpty()) roomId else "bot-${java.util.UUID.randomUUID().toString().take(8)}")
+                    currentBotRepository = newRepo
+                    newRepo
+                }
+            } else {
+                repository
+            }
             GameViewModel(repo, roomId)
         }
     }
 
     fun resultViewModelFactory(roomId: String, isBot: Boolean = false) = viewModelFactory {
         initializer {
-            val repo = if (isBot) currentBotRepository ?: LocalGameRepository() else repository
+            val repo = if (isBot) {
+                val current = currentBotRepository
+                if (current != null && (current.roomId == roomId || roomId.isEmpty())) {
+                    current
+                } else {
+                    val newRepo = LocalGameRepository(roomId = if (roomId.isNotEmpty()) roomId else "bot-${java.util.UUID.randomUUID().toString().take(8)}")
+                    currentBotRepository = newRepo
+                    newRepo
+                }
+            } else {
+                repository
+            }
             ResultViewModel(repo, roomId)
         }
     }

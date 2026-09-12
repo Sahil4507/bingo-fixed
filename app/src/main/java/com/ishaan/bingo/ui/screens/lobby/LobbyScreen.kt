@@ -39,9 +39,17 @@ fun LobbyScreen(
         AlertDialog(
             onDismissRequest = { showDifficultyPopup = false },
             title = { Text("Select Difficulty", fontWeight = FontWeight.Bold) },
-            text = { Text("Choose how smart the bot should be.") },
-            confirmButton = {
-                Column(modifier = Modifier.fillMaxWidth()) {
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Choose how smart the bot should be.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
                             showDifficultyPopup = false
@@ -52,7 +60,6 @@ fun LobbyScreen(
                     ) {
                         Text("EASY MODE")
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
                             showDifficultyPopup = false
@@ -63,7 +70,6 @@ fun LobbyScreen(
                     ) {
                         Text("HARD MODE")
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
                             showDifficultyPopup = false
@@ -79,6 +85,7 @@ fun LobbyScreen(
                     }
                 }
             },
+            confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { showDifficultyPopup = false }) {
                     Text("CANCEL")

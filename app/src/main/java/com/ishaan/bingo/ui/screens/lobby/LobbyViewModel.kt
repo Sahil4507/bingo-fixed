@@ -115,10 +115,6 @@ class LobbyViewModel(
         val localRepo = AppViewModelProvider.freshBotRepository(difficulty)
         val draft = localRepo.createRoomDraft()
 
-        kotlinx.coroutines.runBlocking {
-            localRepo.createRoom(draft)
-        }
-
         _uiState.update {
             it.copy(
                 isLoading = false,

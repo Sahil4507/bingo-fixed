@@ -31,27 +31,9 @@ class LocalGameRepository(
     private val _room = MutableStateFlow<GameRoom?>(null)
     private val _boards = MutableStateFlow<Map<String, BingoBoard>>(emptyMap())
 
-    override fun getGameRoom(roomId: String): Flow<GameRoom?> = _room.asStateFlow()
-
-    override fun getPlayerBoard(roomId: String): Flow<BingoBoard?> = _boards.asStateFlow().map { it[playerId] }
-
-    override fun getOpponentBoard(roomId: String): Flow<BingoBoard?> = _boards.asStateFlow().map { boards ->
-        boards.keys.firstOrNull { it != playerId }?.let { boards[it] }
-    }
-
-    override suspend fun prepareSession(): Result<Unit> = Result.success(Unit)
-
-    override fun createRoomDraft(): GameRoom = GameRoom(
-        id = roomId,
-        code = "BOT",
-        status = GameStatus.BOARD_SETUP,
-        isBotGame = true,
-        botDifficulty = difficulty
-    )
-
-    override suspend fun createRoom(room: GameRoom): Result<GameRoom> {
+    init {
         val p2 = Player(id = player2Id, name = "Opponent (Bot)")
-        val roomWithCreator = room.copy(
+        val initialRoom = GameRoom(
             id = roomId,
             code = "BOT",
             players = mapOf(
@@ -62,17 +44,36 @@ class LocalGameRepository(
             isBotGame = true,
             botDifficulty = difficulty
         )
-        _room.value = roomWithCreator
-
-        // Auto-submit board for P2. In TEE-HEE mode, start with an empty board.
+        _room.value = initialRoom
         val p2Board = if (difficulty == BotDifficulty.TEE_HEE) {
             BingoBoard(List(25) { null })
         } else {
             BingoBoard((1..25).toList().shuffled())
         }
         _boards.value = mapOf(player2Id to p2Board)
+    }
 
-        return Result.success(roomWithCreator)
+    override fun getGameRoom(roomId: String): Flow<GameRoom?> = _room.asStateFlow()
+
+    override fun getPlayerBoard(roomId: String): Flow<BingoBoard?> = _boards.asStateFlow().map { it[playerId] }
+
+    override fun getOpponentBoard(roomId: String): Flow<BingoBoard?> = _boards.asStateFlow().map { boards ->
+        boards.keys.firstOrNull { it != playerId }?.let { boards[it] }
+    }
+
+    override suspend fun prepareSession(): Result<Unit> = Result.success(Unit)
+
+    override fun createRoomDraft(): GameRoom = _room.value ?: GameRoom(
+        id = roomId,
+        code = "BOT",
+        status = GameStatus.BOARD_SETUP,
+        isBotGame = true,
+        botDifficulty = difficulty
+    )
+
+    override suspend fun createRoom(room: GameRoom): Result<GameRoom> {
+        val current = _room.value ?: room
+        return Result.success(current)
     }
 
     override suspend fun joinRoom(code: String): Result<GameRoom> {

@@ -5,6 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ishaan.bingo.ui.AppViewModelProvider
 import com.ishaan.bingo.ui.screens.lobby.LobbyScreen
 import com.ishaan.bingo.ui.screens.setup.BoardSetupScreen
@@ -67,7 +70,16 @@ fun BingoNavHost(navController: NavHostController = rememberNavController()) {
                 onEditClick = { presetId -> navController.navigate(Screen.CreatePreset.createRoute(presetId)) }
             )
         }
-        composable(Screen.CreatePreset.route) { backStackEntry ->
+        composable(
+            route = Screen.CreatePreset.route,
+            arguments = listOf(
+                navArgument("presetId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
             val presetId = backStackEntry.arguments?.getString("presetId")
             CreatePresetScreen(
                 presetId = presetId,
@@ -75,9 +87,15 @@ fun BingoNavHost(navController: NavHostController = rememberNavController()) {
                 onSaved = { navController.popBackStack(Screen.PresetList.route, inclusive = false) }
             )
         }
-        composable(Screen.BoardSetup.route) { backStackEntry ->
+        composable(
+            route = Screen.BoardSetup.route,
+            arguments = listOf(
+                navArgument("roomId") { type = NavType.StringType },
+                navArgument("isBot") { type = NavType.BoolType; defaultValue = false }
+            )
+        ) { backStackEntry ->
             val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-            val isBot = backStackEntry.arguments?.getString("isBot")?.toBoolean() ?: false
+            val isBot = backStackEntry.arguments?.getBoolean("isBot") ?: false
             BoardSetupScreen(
                 roomId = roomId,
                 onBack = {
@@ -85,15 +103,22 @@ fun BingoNavHost(navController: NavHostController = rememberNavController()) {
                     lobbyViewModel.resetLobby()
                     navController.popBackStack(Screen.Lobby.route, inclusive = false)
                 },
-                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                viewModel = viewModel(
+                    key = "BoardSetup_$roomId",
                     factory = AppViewModelProvider.boardSetupViewModelFactory(roomId, isBot)
                 ),
                 onStartGame = { navController.navigate(Screen.Game.createRoute(roomId, isBot)) }
             )
         }
-        composable(Screen.Game.route) { backStackEntry ->
+        composable(
+            route = Screen.Game.route,
+            arguments = listOf(
+                navArgument("roomId") { type = NavType.StringType },
+                navArgument("isBot") { type = NavType.BoolType; defaultValue = false }
+            )
+        ) { backStackEntry ->
             val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-            val isBot = backStackEntry.arguments?.getString("isBot")?.toBoolean() ?: false
+            val isBot = backStackEntry.arguments?.getBoolean("isBot") ?: false
             GameScreen(
                 roomId = roomId,
                 onGameFinished = { winnerId ->
@@ -103,14 +128,23 @@ fun BingoNavHost(navController: NavHostController = rememberNavController()) {
                     lobbyViewModel.resetLobby()
                     navController.popBackStack(Screen.Lobby.route, inclusive = false)
                 },
-                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                viewModel = viewModel(
+                    key = "Game_$roomId",
                     factory = AppViewModelProvider.gameViewModelFactory(roomId, isBot)
                 )
             )
         }
-        composable(Screen.Result.route) { backStackEntry ->
+        composable(
+            route = Screen.Result.route,
+            arguments = listOf(
+                navArgument("roomId") { type = NavType.StringType },
+                navArgument("winnerId") { type = NavType.StringType },
+                navArgument("isBot") { type = NavType.BoolType; defaultValue = false }
+            )
+        ) { backStackEntry ->
             val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-            val isBot = backStackEntry.arguments?.getString("isBot")?.toBoolean() ?: false
+            val winnerId = backStackEntry.arguments?.getString("winnerId") ?: ""
+            val isBot = backStackEntry.arguments?.getBoolean("isBot") ?: false
             ResultScreen(
                 roomId = roomId,
                 onHome = {
@@ -125,7 +159,8 @@ fun BingoNavHost(navController: NavHostController = rememberNavController()) {
                         launchSingleTop = true
                     }
                 },
-                viewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                viewModel = viewModel(
+                    key = "Result_$roomId",
                     factory = AppViewModelProvider.resultViewModelFactory(roomId, isBot)
                 )
             )
