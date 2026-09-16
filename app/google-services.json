@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "803569066548",
+    "project_id": "bingo-fixed",
+    "storage_bucket": "bingo-fixed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:803569066548:android:7fdd089d1c934454012061",
+        "android_client_info": {
+          "package_name": "com.ishaan.bingo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtfEIxFNr3FvrVmXJI2G14QmjZIbqoQmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
