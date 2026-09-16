@@ -28,6 +28,7 @@ fun LobbyScreen(
         if (uiState.shouldNavigateToSetup) {
             val roomId = uiState.joinedRoomId
             val isBot = uiState.isBotGame
+
             if (roomId != null) {
                 onGameJoined(roomId, isBot)
                 viewModel.consumeNavigation()
@@ -38,7 +39,12 @@ fun LobbyScreen(
     if (showDifficultyPopup) {
         AlertDialog(
             onDismissRequest = { showDifficultyPopup = false },
-            title = { Text("Select Difficulty", fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    "Select Difficulty",
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -49,32 +55,33 @@ fun LobbyScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+
                     Spacer(modifier = Modifier.height(8.dp))
+
                     Button(
                         onClick = {
                             showDifficultyPopup = false
-                            val roomId = viewModel.playWithBot(BotDifficulty.EASY)
-                            onGameJoined(roomId, true)
+                            viewModel.playWithBot(BotDifficulty.EASY)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("EASY MODE")
                     }
+
                     Button(
                         onClick = {
                             showDifficultyPopup = false
-                            val roomId = viewModel.playWithBot(BotDifficulty.HARD)
-                            onGameJoined(roomId, true)
+                            viewModel.playWithBot(BotDifficulty.HARD)
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("HARD MODE")
                     }
+
                     Button(
                         onClick = {
                             showDifficultyPopup = false
-                            val roomId = viewModel.playWithBot(BotDifficulty.TEE_HEE)
-                            onGameJoined(roomId, true)
+                            viewModel.playWithBot(BotDifficulty.TEE_HEE)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
@@ -87,19 +94,31 @@ fun LobbyScreen(
             },
             confirmButton = {},
             dismissButton = {
-                TextButton(onClick = { showDifficultyPopup = false }) {
+                TextButton(
+                    onClick = { showDifficultyPopup = false }
+                ) {
                     Text("CANCEL")
                 }
             }
         )
     }
 
-    if (uiState.gameCode.isNotBlank() && !uiState.shouldNavigateToSetup && !uiState.isBotGame) {
+    if (
+        uiState.gameCode.isNotBlank() &&
+        !uiState.shouldNavigateToSetup &&
+        !uiState.isBotGame
+    ) {
         AlertDialog(
             onDismissRequest = { viewModel.resetLobby() },
             title = {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text("Game Created!", fontWeight = FontWeight.Bold)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "Game Created!",
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             },
             text = {
@@ -107,8 +126,13 @@ fun LobbyScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Share this code with your friend:", textAlign = TextAlign.Center)
+                    Text(
+                        "Share this code with your friend:",
+                        textAlign = TextAlign.Center
+                    )
+
                     Spacer(modifier = Modifier.height(24.dp))
+
                     Surface(
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         shape = MaterialTheme.shapes.medium,
@@ -116,28 +140,47 @@ fun LobbyScreen(
                     ) {
                         Text(
                             text = uiState.gameCode,
-                            modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
+                            modifier = Modifier.padding(
+                                horizontal = 32.dp,
+                                vertical = 16.dp
+                            ),
                             style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Black,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
+
                     Spacer(modifier = Modifier.height(32.dp))
+
                     Text(
-                        if (uiState.isLoading) "Creating game..." else "Waiting for opponent...",
+                        if (uiState.isLoading) {
+                            "Creating game..."
+                        } else {
+                            "Waiting for opponent..."
+                        },
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+
                     if (uiState.isLoading) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
+
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(28.dp),
+                            strokeWidth = 3.dp
+                        )
                     }
                 }
             },
             confirmButton = {},
             dismissButton = {
-                TextButton(onClick = { viewModel.resetLobby() }) {
-                    Text("CANCEL", color = MaterialTheme.colorScheme.error)
+                TextButton(
+                    onClick = { viewModel.resetLobby() }
+                ) {
+                    Text(
+                        "CANCEL",
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         )
@@ -146,17 +189,31 @@ fun LobbyScreen(
     uiState.error?.let { error ->
         AlertDialog(
             onDismissRequest = viewModel::clearError,
-            title = { Text("Something went wrong") },
-            text = { Text(error) },
+            title = {
+                Text("Something went wrong")
+            },
+            text = {
+                Text(error)
+            },
             confirmButton = {
-                TextButton(onClick = viewModel::clearError) { Text("OK") }
+                TextButton(
+                    onClick = viewModel::clearError
+                ) {
+                    Text("OK")
+                }
             }
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+    ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -173,79 +230,135 @@ fun LobbyScreen(
 
             Button(
                 onClick = { viewModel.createGame() },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 enabled = !uiState.isLoading,
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("CREATE NEW GAME", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    "CREATE NEW GAME",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedButton(
                 onClick = { showDifficultyPopup = true },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 enabled = !uiState.isLoading,
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("PLAY VS BOT", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    "PLAY VS BOT",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                HorizontalDivider(modifier = Modifier.weight(1f))
-                Text("  OR JOIN  ", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.outline)
-                HorizontalDivider(modifier = Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    "  OR JOIN  ",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.outline
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f)
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             OutlinedTextField(
                 value = joinCode,
-                onValueChange = { 
+                onValueChange = {
                     joinCode = it.uppercase()
                     viewModel.onCodeInputChanged(joinCode)
                 },
-                label = { Text("Game Code") },
+                label = {
+                    Text("Game Code")
+                },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                textStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+                textStyle = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { viewModel.joinGame(joinCode) },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                onClick = {
+                    viewModel.joinGame(joinCode)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 enabled = !uiState.isLoading && joinCode.isNotBlank(),
                 shape = MaterialTheme.shapes.medium
             ) {
-                if (uiState.isLoading && uiState.joinedRoomId == null) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                if (
+                    uiState.isLoading &&
+                    uiState.joinedRoomId == null
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text("JOINING...", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+
+                    Text(
+                        "JOINING...",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 } else {
-                    Text("JOIN GAME", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        "JOIN GAME",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
-            if (uiState.isLoading && uiState.joinedRoomId != null) {
+            if (
+                uiState.isLoading &&
+                uiState.joinedRoomId != null
+            ) {
                 Spacer(modifier = Modifier.height(32.dp))
+
                 CircularProgressIndicator()
             }
-
         }
 
         Surface(
             onClick = onSettingsClick,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(24.dp).size(56.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp)
+                .size(56.dp),
             shape = RoundedCornerShape(percent = 40),
             color = MaterialTheme.colorScheme.secondaryContainer,
             tonalElevation = 4.dp,
             shadowElevation = 2.dp
         ) {
-            Box(contentAlignment = Alignment.Center) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(
                     imageVector = Icons.Default.Settings,
                     contentDescription = "Settings",
